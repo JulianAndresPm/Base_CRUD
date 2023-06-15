@@ -1,0 +1,87 @@
+        private void enviar_Click(object sender, EventArgs e)
+        {
+            
+            string name = nombre.Text;
+            string ape = apellido.Text;
+            string cedu = cedula.Text;
+            string tel1 = telefono1.Text;
+            string tel2 = telefono2.Text;
+            try
+            {
+                NpgsqlConnection CONEXION = new NpgsqlConnection("Server = localhost; Port = 5432; User Id = postgres; Password = toro2234; Database = usuarios");
+                CONEXION.Open();
+                NpgsqlCommand insertar = new NpgsqlCommand($"insert into cliente (nombre, apellido, cedula) values ('{name}','{ape}', '{cedu}')",CONEXION);
+                insertar.ExecuteNonQuery();
+                NpgsqlCommand insertar_tel = new NpgsqlCommand($"insert into telefonos (idcliente,telefono1,telefono2) values ('{cedu}','{tel1}', '{tel2}')", CONEXION);
+                insertar_tel.ExecuteNonQuery();
+                System.Windows.Forms.MessageBox.Show("Datos insertados");
+            }
+            catch(Exception )
+            {
+                System.Windows.Forms.MessageBox.Show("Error de insersion");
+
+            }
+        }
+
+
+======================
+======================
+
+private void ConsultarDatos()
+{
+    try
+    {
+        NpgsqlConnection CONEXION = new NpgsqlConnection("Server=localhost; Port=5432; User Id=postgres; Password=toro2234; Database=usuarios");
+        CONEXION.Open();
+        
+        // Consulta para obtener los datos de la tabla cliente
+        string consultaCliente = "SELECT * FROM cliente";
+        NpgsqlCommand comandoCliente = new NpgsqlCommand(consultaCliente, CONEXION);
+        NpgsqlDataReader readerCliente = comandoCliente.ExecuteReader();
+        
+        while (readerCliente.Read())
+        {
+            // Acceder a los valores de cada fila obtenida
+            string nombre = readerCliente.GetString(0);
+            string apellido = readerCliente.GetString(1);
+            string cedula = readerCliente.GetString(2);
+
+            // Realizar las operaciones necesarias con los datos obtenidos
+            // ...
+
+            // Ejemplo: Mostrar los datos en un MessageBox
+            string mensaje = $"Nombre: {nombre}\nApellido: {apellido}\nCédula: {cedula}";
+            MessageBox.Show(mensaje);
+        }
+
+        readerCliente.Close();
+
+        // Consulta para obtener los datos de la tabla telefonos
+        string consultaTelefonos = "SELECT * FROM telefonos";
+        NpgsqlCommand comandoTelefonos = new NpgsqlCommand(consultaTelefonos, CONEXION);
+        NpgsqlDataReader readerTelefonos = comandoTelefonos.ExecuteReader();
+
+        while (readerTelefonos.Read())
+        {
+            // Acceder a los valores de cada fila obtenida
+            string idCliente = readerTelefonos.GetString(0);
+            string telefono1 = readerTelefonos.GetString(1);
+            string telefono2 = readerTelefonos.GetString(2);
+
+            // Realizar las operaciones necesarias con los datos obtenidos
+            // ...
+
+            // Ejemplo: Mostrar los datos en un MessageBox
+            string mensaje = $"ID Cliente: {idCliente}\nTeléfono 1: {telefono1}\nTeléfono 2: {telefono2}";
+            MessageBox.Show(mensaje);
+        }
+
+        readerTelefonos.Close();
+
+        CONEXION.Close();
+    }
+    catch (Exception ex)
+    {
+        // Manejo de errores
+    }
+}
